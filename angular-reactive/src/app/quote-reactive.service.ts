@@ -5,26 +5,38 @@ import { Quote } from './quote';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
+export interface QuoteStreamOptions {
+  pageIndex?: number;
+  pageSize?: number;
+  continuous?: boolean;
+}
+
+const backendBaseUrl = 'http://localhost:8080';
+const getAllUrl = backendBaseUrl + '/quotes-reactive';
+const createUrl = backendBaseUrl + '/quotes-reactive';
+const getPagedUrl = backendBaseUrl + '/quotes-reactive-paged';
+const getContinuousUrl = backendBaseUrl + '/quotes-reactive-continuous';
+
 @Injectable()
 export class QuoteReactiveService {
-  
-  url: string = 'http://localhost:8080/quotes-reactive';
-  urlPaged: string = 'http://localhost:8080/quotes-reactive-paged';
-  
+
+
   constructor(private http: HttpClient) {
   }
 
   pushNewQuote(quoteData: Partial<Quote>) {
-    return this.http.post(this.url, quoteData).subscribe(() => {
+    return this.http.post(createUrl, quoteData).subscribe(() => {
       console.log("done");
     })
   }
 
-  getQuoteStream(page?: number, size?: number): Observable<Quote> {
+  getQuoteStream(options: QuoteStreamOptions = {}): Observable<Quote> {
     return new Observable<Quote>((observer) => {
-      let url = this.url;
-      if (page != null) {
-        url = this.urlPaged + '?page=' + page + '&size=' + size;
+      let url = getAllUrl;
+      if (options.continuous) {
+        url = getContinuousUrl;
+      } else if (options.pageIndex != null || options.pageSize != null) {
+        url = getPagedUrl + '?page=' + (options.pageIndex ?? 0) + '&size=' + (options.pageSize ?? 20);
       }
       let eventSource = new EventSource(url);
       eventSource.onmessage = (event) => {

@@ -10,6 +10,11 @@
           <input type="text" [(ngModel)]="size" size="2">
         </label>
       </label>
+&nbsp;
+      <label>Continuous:
+        <input type="checkbox" [checked]="continuous" (change)="continuous = !continuous" />
+      </label>
+
       <button (click)="requestQuoteStream()">Reactive Request</button>
       <button (click)="requestQuoteBlocking()">Blocking Request</button>
 

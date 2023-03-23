@@ -1,9 +1,9 @@
-import {Quote} from './quote';
-import {QuoteReactiveService} from './quote-reactive.service';
-import {QuoteBlockingService} from './quote-blocking.service';
+import { Quote } from './quote';
+import { QuoteReactiveService } from './quote-reactive.service';
+import { QuoteBlockingService } from './quote-blocking.service';
 
-import {Observable} from 'rxjs';
-import {ChangeDetectorRef, Component} from "@angular/core";
+import { Observable } from 'rxjs';
+import { ChangeDetectorRef, Component } from "@angular/core";
 
 @Component({
   selector: 'app-component-quotes',
@@ -16,12 +16,13 @@ export class QuotesComponent {
   selectedQuote: Quote;
   mode: string;
   pagination: boolean;
+  continuous: boolean;
   page: number;
   size: number;
 
   constructor(private quoteReactiveService: QuoteReactiveService, private quoteBlockingService: QuoteBlockingService, private cdr: ChangeDetectorRef) {
     this.mode = "reactive";
-    this.pagination = true;
+    this.continuous = true;
     this.page = 0;
     this.size = 50;
   }
@@ -32,16 +33,16 @@ export class QuotesComponent {
 
   pushNewQuote(): void {
     console.log("create")
-    this.quoteReactiveService.pushNewQuote({book: "coucou", content: "kkkk"});
+    this.quoteReactiveService.pushNewQuote({ book: "coucou", content: "kkkk" });
   }
 
   requestQuoteStream(): void {
     this.resetData();
     let quoteObservable: Observable<Quote>;
     if (this.pagination === true) {
-      quoteObservable = this.quoteReactiveService.getQuoteStream(this.page, this.size);
+      quoteObservable = this.quoteReactiveService.getQuoteStream({ pageIndex: this.page, pageSize: this.size });
     } else {
-      quoteObservable = this.quoteReactiveService.getQuoteStream();
+      quoteObservable = this.quoteReactiveService.getQuoteStream({ continuous: this.continuous });
     }
     quoteObservable.subscribe(quote => {
       this.quoteArray.push(quote);
