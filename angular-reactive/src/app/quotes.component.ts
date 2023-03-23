@@ -12,6 +12,7 @@ import { ChangeDetectorRef, Component } from "@angular/core";
 })
 export class QuotesComponent {
 
+  newQuoteDialogOpen = false;
   quoteArray: Quote[] = [];
   selectedQuote: Quote;
   mode: string;
@@ -19,6 +20,9 @@ export class QuotesComponent {
   continuous: boolean;
   page: number;
   size: number;
+
+  newQuoteBook: string = "";
+  newQuoteContent: string = "";
 
   constructor(private quoteReactiveService: QuoteReactiveService, private quoteBlockingService: QuoteBlockingService, private cdr: ChangeDetectorRef) {
     this.mode = "reactive";
@@ -33,7 +37,11 @@ export class QuotesComponent {
 
   pushNewQuote(): void {
     console.log("create")
-    this.quoteReactiveService.pushNewQuote({ book: "coucou", content: "kkkk" });
+    this.quoteReactiveService.pushNewQuote({ book: this.newQuoteBook ?? "a book", content: this.newQuoteContent ?? "quote content" });
+
+    this.newQuoteBook = "";
+    this.newQuoteContent = "";
+    this.newQuoteDialogOpen = false;
   }
 
   requestQuoteStream(): void {
