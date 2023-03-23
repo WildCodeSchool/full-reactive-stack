@@ -4,6 +4,8 @@ import { QuoteBlockingService } from './quote-blocking.service';
 
 import { Observable } from 'rxjs';
 import { ChangeDetectorRef, Component } from "@angular/core";
+import { Author, Region } from './author';
+import { AuthorsReactiveService } from './authors-reactive.service';
 
 @Component({
   selector: 'app-component-quotes',
@@ -20,11 +22,19 @@ export class QuotesComponent {
   continuous: boolean;
   page: number;
   size: number;
-
+  
   newQuoteBook: string = "";
   newQuoteContent: string = "";
+  newQuoteAuthorFullName: string = "";
+  newQuoteAuthorRegion: Region = Region.Bretagne;
+  
+  authorsArray: Author[] = [];
+  authorsContinuous: boolean;
 
-  constructor(private quoteReactiveService: QuoteReactiveService, private quoteBlockingService: QuoteBlockingService, private cdr: ChangeDetectorRef) {
+  constructor(
+    private readonly authorsReactiveService: AuthorsReactiveService, 
+    private readonly quoteReactiveService: QuoteReactiveService, 
+    private readonly quoteBlockingService: QuoteBlockingService, private cdr: ChangeDetectorRef) {
     this.mode = "reactive";
     this.continuous = true;
     this.page = 0;
@@ -67,6 +77,16 @@ export class QuotesComponent {
       this.quoteBlockingService.getQuotes()
         .subscribe(q => this.quoteArray = q);
     }
+  }
+
+  requestAuthors(): void {
+    this.authorsArray = []
+    let observable: Observable<Author>;
+    observable = this.authorsReactiveService.getAuthors(this.authorsContinuous);
+    observable.subscribe(author => {
+      this.authorsArray.push(author);
+      this.cdr.detectChanges();
+    });
   }
 
   onSelect(quote: Quote): void {

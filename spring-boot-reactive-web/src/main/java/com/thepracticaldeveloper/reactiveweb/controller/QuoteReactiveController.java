@@ -1,5 +1,7 @@
 package com.thepracticaldeveloper.reactiveweb.controller;
 
+import static org.h2.util.StringUtils.isNullOrEmpty;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +10,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.thepracticaldeveloper.reactiveweb.domain.Quote;
+import com.thepracticaldeveloper.reactiveweb.domain.Author.Region;
 import com.thepracticaldeveloper.reactiveweb.repository.r2dbc.QuoteReactiveRepository;
 import com.thepracticaldeveloper.reactiveweb.repository.r2dbc.QuoteReactiveRepository.QuoteCreatedEvent;
 
@@ -62,9 +66,18 @@ public class QuoteReactiveController {
         return quoteReactiveRepository.findAll().delayElements(Duration.ofMillis(DELAY_PER_ITEM_MS));
     }
 
+    public static record CreateQuoteDTO(String authorFullName, Region authorRegion, String book, String content) {}
+
     @PostMapping("/quotes-reactive")
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<Quote> create(@RequestBody Quote quote) {
+    public Mono<Quote> create(@RequestBody CreateQuoteDTO createDto) {
+
+        Long authorId = null;
+        if (!isNullOrEmpty(createDto.authorFullName())) {
+            
+        }
+
+        var quote = new Quote(createDto.book(), createDto.content(), authorId);
         return quoteReactiveRepository.save(quote);
     }
 

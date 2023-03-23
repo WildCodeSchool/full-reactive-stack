@@ -11,13 +11,20 @@ public class Quote {
     private String book;
     private String content;
 
+    private Long authorId;
+
     // Empty constructor is required by the data layer and JSON de/ser
     public Quote() {
     }
 
     public Quote(String book, String content) {
+        this(book, content, null);
+    }
+
+    public Quote(String book, String content, Long authorId) {
         this.book = book;
         this.content = content;
+        this.authorId = authorId;
     }
 
     public Quote(Long id, String book, String content) {
@@ -71,15 +78,7 @@ public class Quote {
         return result;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setBook(String book) {
-        this.book = book;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
+    public Long getAuthorId() {
+        return authorId;
     }
 }

@@ -8,6 +8,7 @@ import { QuoteBlockingService } from './quote-blocking.service';
 import { AppComponent } from './app.component';
 import { QuotesComponent } from './quotes.component';
 import { QuoteDetailComponent } from './quote-detail.component';
+import { AuthorsReactiveService } from './authors-reactive.service';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { QuoteDetailComponent } from './quote-detail.component';
   ],
   providers: [
     QuoteReactiveService,
-    QuoteBlockingService
+    QuoteBlockingService,
+    AuthorsReactiveService
   ],
   bootstrap: [AppComponent]
 })

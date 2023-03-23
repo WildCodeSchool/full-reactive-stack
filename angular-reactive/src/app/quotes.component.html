@@ -58,9 +58,49 @@
     <div>
       <input type="text" [(ngModel)]="newQuoteContent" />
     </div>
+    <div>
+      Author FullName:
+    </div>
+    <div>
+      <input type="text" [(ngModel)]="newQuoteAuthorFullName" />
+    </div>
+    <div>
+      Author Region:
+    </div>
+    <div>
+      <input type="text" [(ngModel)]="newQuoteAuthorRegion" />
+    </div>
     <menu>
       <button value="cancel" (click)="newQuoteDialogOpen = false">Cancel</button>
       <button value="default" (click)="pushNewQuote()">Send</button>
     </menu>
   </form>
 </dialog>
+
+<div>
+
+  <h3>Authors</h3>
+  <p>
+    <label>Continuous:
+      <input type="checkbox" [checked]="authorsContinuous" (change)="authorsContinuous = !authorsContinuous" />
+    </label>
+    <button (click)="requestAuthors()">Request</button>
+  </p>
+
+  <table class="table">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Region</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let author of authorsArray">
+      <td>{{author.id}}</td>
+      <td>{{author.fullName}}</td>
+      <td>{{author.region}}</td>
+    <tr>
+    </tbody>
+  </table>
+</div>
