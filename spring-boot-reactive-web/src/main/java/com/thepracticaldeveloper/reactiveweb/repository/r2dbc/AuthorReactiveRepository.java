@@ -17,6 +17,8 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface AuthorReactiveRepository extends R2dbcRepository<Author, Long> {
 
+    Mono<Author> findByFullName(final String fullName);
+
     record AuthorCreatedEvent(Author author) {
     }
 

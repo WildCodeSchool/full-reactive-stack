@@ -5,6 +5,7 @@ import static org.h2.util.StringUtils.isNullOrEmpty;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.PageRequest;
@@ -33,6 +34,8 @@ import reactor.core.publisher.Mono;
 @RestController
 @CrossOrigin(origins = "*")
 public class QuoteReactiveController {
+
+    private static final long BADVAL = -66;
 
     private static final int DELAY_PER_ITEM_MS = 100;
 
@@ -79,15 +82,21 @@ public class QuoteReactiveController {
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<Quote> create(@RequestBody CreateQuoteDTO createDto) {
 
-        Long authorId = null;
+        Mono<Author> authorResolver = Mono.empty();
         if (!isNullOrEmpty(createDto.authorFullName())) {
-            var author = new Author(createDto.authorFullName(), createDto.authorRegion());
-            authorId = authorReactiveRepository.save(author)
-                    .block().getId();
+            authorResolver = authorReactiveRepository.findByFullName(createDto.authorFullName())
+                    .switchIfEmpty(Mono.defer(() -> {
+                        var author = new Author(createDto.authorFullName(), createDto.authorRegion());
+                        return authorReactiveRepository.save(author);
+                    }));
         }
 
-        var quote = new Quote(createDto.book(), createDto.content(), authorId);
-        return quoteReactiveRepository.save(quote);
+        return authorResolver.map(author -> Optional.of(author.getId()))
+                .defaultIfEmpty(Optional.empty())
+                .flatMap(authorId -> {
+                    var quote = new Quote(createDto.book(), createDto.content(), authorId.orElse(null));
+                    return quoteReactiveRepository.<Quote>save(quote);
+                });
     }
 
     @GetMapping("/quotes-reactive-paged")

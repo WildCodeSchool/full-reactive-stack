@@ -22,7 +22,7 @@ public interface QuoteReactiveRepository extends R2dbcRepository<Quote, Long> {
     Flux<Quote> findAllByIdNotNullOrderByIdAsc(final Pageable page);
 
     record QuoteCreatedEvent(Quote quote) {
-    }
+    } 
 
     @Component
     class AfterSave implements AfterSaveCallback<Quote> {
