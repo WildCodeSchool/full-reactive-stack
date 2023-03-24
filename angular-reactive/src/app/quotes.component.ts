@@ -115,6 +115,7 @@ export class QuotesComponent {
   }
 
   openDialog() {
+    this.resetForm();
     this.newQuoteDialogOpen = true;
     this.cdr.detectChanges();
   }
