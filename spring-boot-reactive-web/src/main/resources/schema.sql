@@ -1,14 +1,14 @@
 
 CREATE TABLE IF NOT EXISTS author (
     id bigint PRIMARY KEY auto_increment,
-    fullName VARCHAR(512),
-    region int
+    full_name VARCHAR(512),
+    region VARCHAR(512)
 );
 
 CREATE TABLE IF NOT EXISTS quote (
     id bigint PRIMARY KEY auto_increment,
     book VARCHAR(255),
     content TEXT,
-    authorId bigint DEFAULT NULL,
-    CONSTRAINT FK_authorId FOREIGN KEY (authorId) REFERENCES author(id) 
+    author_id bigint DEFAULT NULL,
+    CONSTRAINT FK_authorId FOREIGN KEY (author_id) REFERENCES author(id) 
 );

@@ -18,7 +18,7 @@
       <button (click)="requestQuoteStream()">Reactive Request</button>
       <button (click)="requestQuoteBlocking()">Blocking Request</button>
 
-      <button (click)="newQuoteDialogOpen = true">Push quote 🚀</button>
+      <button (click)="openDialog()">Push quote 🚀</button>
       
     </p>
     <table class="table">
@@ -50,25 +50,28 @@
       Book title:
     </div>
     <div>
-      <input type="text" [(ngModel)]="newQuoteBook" />
+      <input name="newQuoteBook" type="text" [(ngModel)]="newQuoteBook" />
     </div>
     <div>
       Review:
+      {{newQuoteContent}}
     </div>
     <div>
-      <input type="text" [(ngModel)]="newQuoteContent" />
+      <input name="newQuoteContent" type="text" [(ngModel)]="newQuoteContent" />
     </div>
     <div>
       Author FullName:
     </div>
     <div>
-      <input type="text" [(ngModel)]="newQuoteAuthorFullName" />
+      <input name="newQuoteAuthorFullName" type="text" [(ngModel)]="newQuoteAuthorFullName" />
     </div>
     <div>
       Author Region:
     </div>
     <div>
-      <input type="text" [(ngModel)]="newQuoteAuthorRegion" />
+      <select [(ngModel)]="newQuoteAuthorRegion" name="newQuoteAuthorRegion">
+        <option *ngFor="let r of regionEntries" [ngValue]="r.value">{{r.text}}</option>
+      </select>
     </div>
     <menu>
       <button value="cancel" (click)="newQuoteDialogOpen = false">Cancel</button>

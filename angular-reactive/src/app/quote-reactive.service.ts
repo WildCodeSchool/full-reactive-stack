@@ -4,6 +4,7 @@ import { Quote } from './quote';
 
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { Region } from './author';
 
 export interface QuoteStreamOptions {
   pageIndex?: number;
@@ -17,6 +18,13 @@ const createUrl = backendBaseUrl + '/quotes-reactive';
 const getPagedUrl = backendBaseUrl + '/quotes-reactive-paged';
 const getContinuousUrl = backendBaseUrl + '/quotes-reactive-continuous';
 
+interface CreateQuoteDTO {
+  book: string;
+  content: string;
+  authorFullName: string;
+  authorRegion: Region;
+}
+
 @Injectable()
 export class QuoteReactiveService {
 
@@ -24,7 +32,7 @@ export class QuoteReactiveService {
   constructor(private http: HttpClient) {
   }
 
-  pushNewQuote(quoteData: Partial<Quote>) {
+  pushNewQuote(quoteData: CreateQuoteDTO) {
     return this.http.post(createUrl, quoteData).subscribe(() => {
       console.log("done");
     })

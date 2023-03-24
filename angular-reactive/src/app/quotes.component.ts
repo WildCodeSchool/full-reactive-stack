@@ -22,23 +22,32 @@ export class QuotesComponent {
   continuous: boolean;
   page: number;
   size: number;
-  
+
   newQuoteBook: string = "";
   newQuoteContent: string = "";
   newQuoteAuthorFullName: string = "";
-  newQuoteAuthorRegion: Region = Region.Bretagne;
-  
+  newQuoteAuthorRegion: Region;
+
   authorsArray: Author[] = [];
-  authorsContinuous: boolean;
+  authorsContinuous: boolean = true;
+
+  regionEntries: { value: number, text: string }[] = [];
 
   constructor(
-    private readonly authorsReactiveService: AuthorsReactiveService, 
-    private readonly quoteReactiveService: QuoteReactiveService, 
+    private readonly authorsReactiveService: AuthorsReactiveService,
+    private readonly quoteReactiveService: QuoteReactiveService,
     private readonly quoteBlockingService: QuoteBlockingService, private cdr: ChangeDetectorRef) {
     this.mode = "reactive";
     this.continuous = true;
     this.page = 0;
     this.size = 50;
+
+    for (var regionEntry in Region) {
+      var isValueProperty = Number(regionEntry) >= 0
+      if (isValueProperty) {
+        this.regionEntries.push({ value: parseInt(regionEntry), text: Region[regionEntry] })
+      }
+    }
   }
 
   resetData() {
@@ -47,11 +56,22 @@ export class QuotesComponent {
 
   pushNewQuote(): void {
     console.log("create")
-    this.quoteReactiveService.pushNewQuote({ book: this.newQuoteBook ?? "a book", content: this.newQuoteContent ?? "quote content" });
+    this.quoteReactiveService.pushNewQuote({
+      book: this.newQuoteBook ?? "a book",
+      content: this.newQuoteContent ?? "quote content",
+      authorFullName: this.newQuoteAuthorFullName ?? "unknown authir",
+      authorRegion: this.newQuoteAuthorRegion ?? Region.Corse,
+    });
 
+    this.resetForm();
+    this.newQuoteDialogOpen = false;
+  }
+
+  private resetForm() {
     this.newQuoteBook = "";
     this.newQuoteContent = "";
-    this.newQuoteDialogOpen = false;
+    this.newQuoteAuthorFullName = "";
+    this.newQuoteAuthorRegion = undefined;
   }
 
   requestQuoteStream(): void {
@@ -93,4 +113,10 @@ export class QuotesComponent {
     this.selectedQuote = quote;
     this.cdr.detectChanges();
   }
+
+  openDialog() {
+    this.newQuoteDialogOpen = true;
+    this.cdr.detectChanges();
+  }
+
 }

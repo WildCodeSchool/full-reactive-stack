@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.thepracticaldeveloper.reactiveweb.domain.Author;
 import com.thepracticaldeveloper.reactiveweb.domain.Quote;
 import com.thepracticaldeveloper.reactiveweb.domain.Author.Region;
+import com.thepracticaldeveloper.reactiveweb.repository.r2dbc.AuthorReactiveRepository;
 import com.thepracticaldeveloper.reactiveweb.repository.r2dbc.QuoteReactiveRepository;
 import com.thepracticaldeveloper.reactiveweb.repository.r2dbc.QuoteReactiveRepository.QuoteCreatedEvent;
 
@@ -38,8 +40,12 @@ public class QuoteReactiveController {
 
     private List<FluxSink<QuoteCreatedEvent>> sinks = new ArrayList<>();
 
-    public QuoteReactiveController(final QuoteReactiveRepository quoteReactiveRepository) {
+    private AuthorReactiveRepository authorReactiveRepository;
+
+    public QuoteReactiveController(final QuoteReactiveRepository quoteReactiveRepository,
+            final AuthorReactiveRepository authorReactiveRepository) {
         this.quoteReactiveRepository = quoteReactiveRepository;
+        this.authorReactiveRepository = authorReactiveRepository;
     }
 
     @EventListener
@@ -66,7 +72,8 @@ public class QuoteReactiveController {
         return quoteReactiveRepository.findAll().delayElements(Duration.ofMillis(DELAY_PER_ITEM_MS));
     }
 
-    public static record CreateQuoteDTO(String authorFullName, Region authorRegion, String book, String content) {}
+    public static record CreateQuoteDTO(String authorFullName, Region authorRegion, String book, String content) {
+    }
 
     @PostMapping("/quotes-reactive")
     @ResponseStatus(HttpStatus.CREATED)
@@ -74,7 +81,9 @@ public class QuoteReactiveController {
 
         Long authorId = null;
         if (!isNullOrEmpty(createDto.authorFullName())) {
-            
+            var author = new Author(createDto.authorFullName(), createDto.authorRegion());
+            authorId = authorReactiveRepository.save(author)
+                    .block().getId();
         }
 
         var quote = new Quote(createDto.book(), createDto.content(), authorId);

@@ -14,4 +14,6 @@ table.table {
 
 dialog {
     border: solid 1px rgba(100, 100, 100, .4);
+    z-index: 1000;
+
 }
